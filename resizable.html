@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+	<meta charset="UTF-8">
+	<title>Resizeable</title>
+	<style>
+	html,
+	body {
+		padding: 0;
+		margin: 0;
+		background: #EAEFF3;
+		font-family: 微软雅黑;
+	}
+	.panel {
+		-webkit-opacity: 0;
+		-moz-opacity: 0;
+		opacity: 0;
+		width: 300px;
+		height: 290px;
+		position: absolute;
+		left: 400px;
+		top: 150px;
+		box-shadow: 1px 1px 14px rgba(0, 0, 0, 0.3);
+		background: #fff;
+		-webkit-border-radius: 7px;
+		-moz-border-radius: 7px;
+		border-radius: 7px;
+		-webkit-transform: translateY(15px);
+		-moz-transform: translateY(15px);
+		transform: translateY(15px);
+		-webkit-transition: opacity 0.5s ease-in-out;
+		-moz-transition: opacity 0.5s ease-in-out;
+		transition: opacity 0.5s ease-in-out;
+	}
+	.show .panel{
+		-webkit-opacity: 1;
+		-moz-opacity: 1;
+		opacity: 1;
+		-webkit-transform: translateY(0);
+		-moz-transform: translateY(0);
+		transform: translateY(0);
+	}
+	.panel-title {
+		height: 56px;
+		width: 100%;
+		background: #7d6688;
+		cursor: move;
+		-webkit-border-radius: 7px 7px 0 0;
+		-moz-border-radius: 7px 7px 0 0;
+		border-radius: 7px 7px 0 0;
+	}
+	.panel-title>p {
+		margin: 0;
+		line-height: 50px;
+		height: 50px;
+		text-align: center;
+		color: #fff;
+	}
+
+	.ui-control-right {
+		height:100%;
+		width: 10px;
+		position: absolute;	top: 0;
+		right: 0;
+		z-index:3;
+		cursor: e-resize;
+	}
+	.ui-control-bottom {
+		width:100%;
+		height: 10px;
+		position: absolute;
+		z-index:2;
+		left: 0;
+		bottom: 0;
+		cursor: n-resize;
+	}
+
+	.ui-control-rt-btm {
+		width: 16px;
+		height: 16px;
+		position: absolute;
+		z-index: 4;
+		right: 0;
+		bottom: 0;
+		cursor: se-resize;
+	}
+	</style>
+</head>
+<body>
+	<div class="panel" id="panel">
+		<div class="panel-title" id="panelTitle"><p>可拉伸面板</p></div>
+		<div class="panel-content"></div>
+
+		<div class="ui-control-right" id="ctrlRight"></div>
+		<div class="ui-control-bottom" id="ctrlBottom"></div>
+		<div class="ui-control-rt-btm" id="ctrlRightBottom"></div>
+	</div>
+	<script>
+	function g(id) {
+		return document.getElementById(id);
+	}
+
+	// 获取DOM
+	var panel           = g('panel');
+	var ctrlRight       = g('ctrlRight');
+	var ctrlBottom      = g('ctrlBottom');
+	var ctrlRightBottom = g('ctrlRightBottom');
+	var panelTitle      = g('panelTitle');
+
+	// 初始化位置
+	panel.style.top = (document.documentElement.clientHeight - panel.offsetHeight) / 2 + 'px';
+	panel.style.left = (document.documentElement.clientWidth - panel.offsetWidth) / 2 + 'px';
+
+	document.body.className = "show";
+
+	// 公共属性
+	var offsetLeft      = panel.offsetLeft;
+	var offsetTop       = panel.offsetTop;
+
+	// 公共方法
+	function setAttr(w, mouseOffsetX, h, mouseOffsetY) {
+
+		//  判断值是否传值
+		if (typeof w == 'number' && typeof mouseOffsetX == 'number') {
+
+			if (w > document.documentElement.clientWidth - mouseOffsetX) {
+				w = document.documentElement.clientWidth - mouseOffsetX;
+			}
+
+			var width  = w - offsetLeft + mouseOffsetX;
+
+			if (width < 160) {
+				width = 160;
+			}
+
+			panel.style.width = width  + 'px';
+		}
+
+		//  判断值是否传值
+		if (typeof h == 'number' && typeof mouseOffsetY == 'number') {
+
+			if (h > document.documentElement.clientHeight - mouseOffsetY) {
+				h = document.documentElement.clientHeight - mouseOffsetY;
+			}
+
+			var height = h - offsetTop + mouseOffsetY;
+
+			if (height < 160) {
+				height = 160;
+			}
+
+			panel.style.height = height  + 'px';
+		}
+
+	}
+
+	// 下边框控制器监听
+	ctrlBottom.addEventListener('mousedown', function (e) {
+		var e            = e || event;
+		var mouseOffsetY = panel.offsetHeight - (e.clientY - offsetTop);
+
+		document.onmousemove = function (e) {
+			var e = e || event;
+			e.preventDefault();
+
+			setAttr(null, null, e.clientY, mouseOffsetY);
+		}
+
+		document.onmouseup = function (e) {
+			document.onmousemove = null;
+			document.onmouseup = null;
+			return false;
+		}
+	});
+
+	// 右边框控制器监听
+	ctrlRight.addEventListener('mousedown', function (e) {
+
+		var e            = e || event;
+		var mouseOffsetX = panel.offsetWidth - (e.clientX - offsetLeft);
+
+		document.onmousemove = function (e) {
+			var e = e || event;
+			e.preventDefault();
+
+			setAttr(e.clientX, mouseOffsetX, null, null);
+		}
+
+		document.onmouseup = function (e) {
+			document.onmousemove = null;
+			document.onmouseup = null;
+			return false;
+		}
+	});
+
+	// 右下边框控制器监听
+	ctrlRightBottom.addEventListener('mousedown', function (e) {
+		var e            = e || event;
+		var mouseOffsetX = panel.offsetWidth - (e.clientX - offsetLeft);
+		var mouseOffsetY = panel.offsetHeight - (e.clientY - offsetTop);
+
+		document.onmousemove = function (e) {
+			var e      = e || event;
+			e.preventDefault();
+
+			setAttr(e.clientX, mouseOffsetX, e.clientY, mouseOffsetY);
+
+		}
+
+		document.onmouseup = function (e) {
+			document.onmousemove = null;
+			document.onmouseup = null;
+			return false;
+		}
+	});
+
+	// 标题拖拽监听
+	panelTitle.addEventListener('mousedown', function (e) {
+		var e = e || event;
+
+		var mouseOffsetLeft = e.clientX - offsetLeft;
+		var mouseOffsetTop = e.clientY - offsetTop;
+
+		document.onmousemove = function (e) {
+
+			var e          = e || event;
+			e.preventDefault();
+
+			offsetLeft = e.clientX - mouseOffsetLeft;
+			offsetTop  = e.clientY - mouseOffsetTop;
+
+			var clientW    = document.documentElement.clientWidth;
+			var clientH    = document.documentElement.clientHeight;
+
+			var maxW       = clientW - panel.offsetWidth;
+			var maxH       = clientH - panel.offsetHeight;
+
+			if (offsetLeft < 15) {
+				offsetLeft = 0;
+			}
+			if (offsetLeft > maxW - 15) {
+				offsetLeft = maxW;
+			}
+			if (offsetTop < 15) {
+				offsetTop = 0;
+			}
+			if (offsetTop > maxH - 15) {
+				offsetTop = maxH;
+			}
+
+			panel.style.top  = offsetTop + 'px';
+			panel.style.left = offsetLeft + 'px';
+		}
+
+		document.onmouseup = function () {
+			document.onmousemove = null;
+			document.onmouseup = null;
+		}
+	});
+	</script>
+</body>
+</html>
