@@ -4,4 +4,4 @@
 鼠标拖拽事件练习
 
 ###项目演示
-项目地址:[项目演示](http://www.rinhome.com/demo/resizable/);
+项目地址：[项目演示](http://www.rinhome.com/demo/resizable/)
