@@ -154,6 +154,11 @@
 
 	}
 
+	function resetMouseup () {
+		document.onmousemove = null;
+		document.onmouseup   = null;
+	}
+
 	// 下边框控制器监听
 	ctrlBottom.addEventListener('mousedown', function (e) {
 		var e            = e || event;
@@ -167,8 +172,7 @@
 		}
 
 		document.onmouseup = function (e) {
-			document.onmousemove = null;
-			document.onmouseup = null;
+			resetMouseup();
 			return false;
 		}
 	});
@@ -187,8 +191,7 @@
 		}
 
 		document.onmouseup = function (e) {
-			document.onmousemove = null;
-			document.onmouseup = null;
+			resetMouseup();
 			return false;
 		}
 	});
@@ -200,40 +203,38 @@
 		var mouseOffsetY = panel.offsetHeight - (e.clientY - offsetTop);
 
 		document.onmousemove = function (e) {
-			var e      = e || event;
+		    var e = e || event;
 			e.preventDefault();
 
 			setAttr(e.clientX, mouseOffsetX, e.clientY, mouseOffsetY);
-
 		}
 
 		document.onmouseup = function (e) {
-			document.onmousemove = null;
-			document.onmouseup = null;
+			resetMouseup();
 			return false;
 		}
 	});
 
 	// 标题拖拽监听
 	panelTitle.addEventListener('mousedown', function (e) {
-		var e = e || event;
+		var e               = e || event;
 
 		var mouseOffsetLeft = e.clientX - offsetLeft;
-		var mouseOffsetTop = e.clientY - offsetTop;
+		var mouseOffsetTop  = e.clientY - offsetTop;
 
 		document.onmousemove = function (e) {
 
-			var e          = e || event;
+			var e       = e || event;
 			e.preventDefault();
 
-			offsetLeft = e.clientX - mouseOffsetLeft;
-			offsetTop  = e.clientY - mouseOffsetTop;
+			offsetLeft  = e.clientX - mouseOffsetLeft;
+			offsetTop   = e.clientY - mouseOffsetTop;
 
-			var clientW    = document.documentElement.clientWidth;
-			var clientH    = document.documentElement.clientHeight;
+			var clientW = document.documentElement.clientWidth;
+			var clientH = document.documentElement.clientHeight;
 
-			var maxW       = clientW - panel.offsetWidth;
-			var maxH       = clientH - panel.offsetHeight;
+			var maxW    = clientW - panel.offsetWidth;
+			var maxH    = clientH - panel.offsetHeight;
 
 			if (offsetLeft < 15) {
 				offsetLeft = 0;
@@ -253,8 +254,8 @@
 		}
 
 		document.onmouseup = function () {
-			document.onmousemove = null;
-			document.onmouseup = null;
+			resetMouseup();
+			return false;
 		}
 	});
 	</script>
